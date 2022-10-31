@@ -1,11 +1,11 @@
 /* Copyright 2013 David Wolverton
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,14 +37,14 @@ import org.slf4j.LoggerFactory;
  * </ol>
  * Both methods return a query language sting and a list of values for filling named parameters. For example the following query and
  * parameter list might be returned:
- * 
+ *
  * <pre>
  * select _it from com.example.Cat _it
  *   where _it.age &gt; :p1 and _it.name != :p2
- *   
+ *
  * parameter list: [3, 'Mittens']
  * </pre>
- * 
+ * <p>
  * This is an abstract class. A subclass must be used to implement individual query languages. Currently only HQL query language is
  * supported ( <code>com.googlecode.genericdao.dao.hibernate.HibernateSearchToQLProcessor</code>). The that implementation could be used for
  * EQL query language as well with no or minor modifications.
@@ -134,7 +134,7 @@ public abstract class BaseSearchProcessor {
      * Generate the QL string that will query the total number of results from a given search (paging is ignored). Fill paramList with the
      * values to be used for the query. All parameters within the query string are specified as named parameters ":pX", where X is the index
      * of the parameter value in paramList.
-     * 
+     *
      * <b>NOTE:</b> Returns null if column operators are used in the search. Such a search will always return 1 row.
      */
     public String generateRowCountQL(Class<?> entityClass, ISearch search, List<Object> paramList) {
@@ -152,17 +152,17 @@ public abstract class BaseSearchProcessor {
         if (fields != null) {
             for (Field field : fields) {
                 switch (field.getOperator()) {
-                case Field.OP_AVG:
-                case Field.OP_COUNT:
-                case Field.OP_COUNT_DISTINCT:
-                case Field.OP_MAX:
-                case Field.OP_MIN:
-                case Field.OP_SUM:
-                    useOperator = true;
-                    break;
-                default:
-                    notUseOperator = true;
-                    break;
+                    case Field.OP_AVG:
+                    case Field.OP_COUNT:
+                    case Field.OP_COUNT_DISTINCT:
+                    case Field.OP_MAX:
+                    case Field.OP_MIN:
+                    case Field.OP_SUM:
+                        useOperator = true;
+                        break;
+                    default:
+                        notUseOperator = true;
+                        break;
                 }
             }
         }
@@ -170,7 +170,7 @@ public abstract class BaseSearchProcessor {
             throw new Error("A search can not have a mix of fields with operators and fields without operators.");
         } else if (useOperator) {
             return null; // if we're using column operators, the query will
-                         // always return 1 result.
+            // always return 1 result.
         }
 
         StringBuilder sb = new StringBuilder();
@@ -244,33 +244,33 @@ public abstract class BaseSearchProcessor {
                     }
 
                     switch (field.getOperator()) {
-                    case Field.OP_AVG:
-                        sb.append("avg(");
-                        useOperator = true;
-                        break;
-                    case Field.OP_COUNT:
-                        sb.append("count(");
-                        useOperator = true;
-                        break;
-                    case Field.OP_COUNT_DISTINCT:
-                        sb.append("count(distinct ");
-                        useOperator = true;
-                        break;
-                    case Field.OP_MAX:
-                        sb.append("max(");
-                        useOperator = true;
-                        break;
-                    case Field.OP_MIN:
-                        sb.append("min(");
-                        useOperator = true;
-                        break;
-                    case Field.OP_SUM:
-                        sb.append("sum(");
-                        useOperator = true;
-                        break;
-                    default:
-                        notUseOperator = true;
-                        break;
+                        case Field.OP_AVG:
+                            sb.append("avg(");
+                            useOperator = true;
+                            break;
+                        case Field.OP_COUNT:
+                            sb.append("count(");
+                            useOperator = true;
+                            break;
+                        case Field.OP_COUNT_DISTINCT:
+                            sb.append("count(distinct ");
+                            useOperator = true;
+                            break;
+                        case Field.OP_MAX:
+                            sb.append("max(");
+                            useOperator = true;
+                            break;
+                        case Field.OP_MIN:
+                            sb.append("min(");
+                            useOperator = true;
+                            break;
+                        case Field.OP_SUM:
+                            sb.append("sum(");
+                            useOperator = true;
+                            break;
+                        default:
+                            notUseOperator = true;
+                            break;
                     }
                     sb.append(prop);
                     if (useOperator) {
@@ -300,7 +300,8 @@ public abstract class BaseSearchProcessor {
             // apply fetches
             boolean hasFetches = false, hasFields = false;
             for (String fetch : fetches) {
-                getOrCreateAlias(ctx, fetch, true);
+                if (!fetch.contains(" "))
+                    getOrCreateAlias(ctx, fetch, true);
                 hasFetches = true;
             }
             if (hasFetches && fields != null) {
@@ -462,145 +463,145 @@ public abstract class BaseSearchProcessor {
         Metadata metadata;
 
         switch (operator) {
-        case Filter.OP_NULL:
-            return getPathRef(ctx, property) + " is null";
-        case Filter.OP_NOT_NULL:
-            return getPathRef(ctx, property) + " is not null";
-        case Filter.OP_IN:
-            return getPathRef(ctx, property) + " in (" + param(ctx, value) + ")";
-        case Filter.OP_NOT_IN:
-            return getPathRef(ctx, property) + " not in (" + param(ctx, value) + ")";
-        case Filter.OP_EQUAL:
-            return getPathRef(ctx, property) + " = " + param(ctx, value);
-        case Filter.OP_NOT_EQUAL:
-            return getPathRef(ctx, property) + " != " + param(ctx, value);
-        case Filter.OP_GREATER_THAN:
-            return getPathRef(ctx, property) + " > " + param(ctx, value);
-        case Filter.OP_LESS_THAN:
-            return getPathRef(ctx, property) + " < " + param(ctx, value);
-        case Filter.OP_GREATER_OR_EQUAL:
-            return getPathRef(ctx, property) + " >= " + param(ctx, value);
-        case Filter.OP_LESS_OR_EQUAL:
-            return getPathRef(ctx, property) + " <= " + param(ctx, value);
-        case Filter.OP_LIKE:
-            return getPathRef(ctx, property) + " like " + param(ctx, value.toString());
-        case Filter.OP_ILIKE:
-            return "lower(" + getPathRef(ctx, property) + ") like lower(" + param(ctx, value.toString()) + ")";
-        case Filter.OP_AND:
-        case Filter.OP_OR:
-            if (!(value instanceof List)) {
-                return null;
-            }
+            case Filter.OP_NULL:
+                return getPathRef(ctx, property) + " is null";
+            case Filter.OP_NOT_NULL:
+                return getPathRef(ctx, property) + " is not null";
+            case Filter.OP_IN:
+                return getPathRef(ctx, property) + " in (" + param(ctx, value) + ")";
+            case Filter.OP_NOT_IN:
+                return getPathRef(ctx, property) + " not in (" + param(ctx, value) + ")";
+            case Filter.OP_EQUAL:
+                return getPathRef(ctx, property) + " = " + param(ctx, value);
+            case Filter.OP_NOT_EQUAL:
+                return getPathRef(ctx, property) + " != " + param(ctx, value);
+            case Filter.OP_GREATER_THAN:
+                return getPathRef(ctx, property) + " > " + param(ctx, value);
+            case Filter.OP_LESS_THAN:
+                return getPathRef(ctx, property) + " < " + param(ctx, value);
+            case Filter.OP_GREATER_OR_EQUAL:
+                return getPathRef(ctx, property) + " >= " + param(ctx, value);
+            case Filter.OP_LESS_OR_EQUAL:
+                return getPathRef(ctx, property) + " <= " + param(ctx, value);
+            case Filter.OP_LIKE:
+                return getPathRef(ctx, property) + " like " + param(ctx, value.toString());
+            case Filter.OP_ILIKE:
+                return "lower(" + getPathRef(ctx, property) + ") like lower(" + param(ctx, value.toString()) + ")";
+            case Filter.OP_AND:
+            case Filter.OP_OR:
+                if (!(value instanceof List)) {
+                    return null;
+                }
 
-            String op = filter.getOperator() == Filter.OP_AND ? " and " : " or ";
+                String op = filter.getOperator() == Filter.OP_AND ? " and " : " or ";
 
-            StringBuilder sb = new StringBuilder("(");
-            boolean first = true;
-            for (Object o : ((List) value)) {
-                if (o instanceof Filter) {
-                    String filterStr = filterToQL(ctx, (Filter) o);
-                    if (filterStr != null) {
-                        if (first) {
-                            first = false;
-                        } else {
-                            sb.append(op);
+                StringBuilder sb = new StringBuilder("(");
+                boolean first = true;
+                for (Object o : ((List) value)) {
+                    if (o instanceof Filter) {
+                        String filterStr = filterToQL(ctx, (Filter) o);
+                        if (filterStr != null) {
+                            if (first) {
+                                first = false;
+                            } else {
+                                sb.append(op);
+                            }
+                            sb.append(filterStr);
                         }
-                        sb.append(filterStr);
                     }
                 }
-            }
-            if (first)
-                return null;
+                if (first)
+                    return null;
 
-            sb.append(")");
-            return sb.toString();
-        case Filter.OP_NOT:
-            if (!(value instanceof Filter)) {
-                return null;
-            }
-            String filterStr = filterToQL(ctx, (Filter) value);
-            if (filterStr == null)
-                return null;
+                sb.append(")");
+                return sb.toString();
+            case Filter.OP_NOT:
+                if (!(value instanceof Filter)) {
+                    return null;
+                }
+                String filterStr = filterToQL(ctx, (Filter) value);
+                if (filterStr == null)
+                    return null;
 
-            return "not " + filterStr;
-        case Filter.OP_EMPTY:
-            metadata = metadataUtil.get(ctx.rootClass, property);
-            if (metadata.isCollection()) {
-                return "not exists elements(" + getPathRef(ctx, property) + ")";
-            } else if (metadata.isString()) {
-                String pathRef = getPathRef(ctx, property);
-                return "(" + pathRef + " is null or " + pathRef + " = '')";
-            } else {
-                return getPathRef(ctx, property) + " is null";
-            }
-        case Filter.OP_NOT_EMPTY:
-            metadata = metadataUtil.get(ctx.rootClass, property);
-            if (metadata.isCollection()) {
-                return "exists elements(" + getPathRef(ctx, property) + ")";
-            } else if (metadata.isString()) {
-                String pathRef = getPathRef(ctx, property);
-                return "(" + pathRef + " is not null and " + pathRef + " != '')";
-            } else {
-                return getPathRef(ctx, property) + " is not null";
-            }
-        case Filter.OP_SOME:
-            if (!(value instanceof Filter)) {
-                return null;
-            } else if (value instanceof Filter) {
-                String simple = generateSimpleAllOrSome(ctx, property, (Filter) value, "some");
-                if (simple != null) {
-                    return simple;
+                return "not " + filterStr;
+            case Filter.OP_EMPTY:
+                metadata = metadataUtil.get(ctx.rootClass, property);
+                if (metadata.isCollection()) {
+                    return "not exists elements(" + getPathRef(ctx, property) + ")";
+                } else if (metadata.isString()) {
+                    String pathRef = getPathRef(ctx, property);
+                    return "(" + pathRef + " is null or " + pathRef + " = '')";
                 } else {
-                    return "exists " + generateSubquery(ctx, property, (Filter) value);
+                    return getPathRef(ctx, property) + " is null";
                 }
-            }
-        case Filter.OP_ALL:
-            if (!(value instanceof Filter)) {
-                return null;
-            } else if (value instanceof Filter) {
-                String simple = generateSimpleAllOrSome(ctx, property, (Filter) value, "all");
-                if (simple != null) {
-                    return simple;
+            case Filter.OP_NOT_EMPTY:
+                metadata = metadataUtil.get(ctx.rootClass, property);
+                if (metadata.isCollection()) {
+                    return "exists elements(" + getPathRef(ctx, property) + ")";
+                } else if (metadata.isString()) {
+                    String pathRef = getPathRef(ctx, property);
+                    return "(" + pathRef + " is not null and " + pathRef + " != '')";
                 } else {
-                    return "not exists " + generateSubquery(ctx, property, negate((Filter) value));
+                    return getPathRef(ctx, property) + " is not null";
                 }
-            }
-        case Filter.OP_NONE:
-            if (!(value instanceof Filter)) {
-                return null;
-            } else if (value instanceof Filter) {
-                // NOTE: Using "all" for the simple all or some is logically
-                // incorrect. It should be "some". However,
-                // because of a bug in how Hibernate 3.1.1 tries to simplify
-                // "not ... some/all ...) it actually ends
-                // up working as desired. TODO: If and when the Hibernate bug is
-                // fixed, this should be switched to "some".
-                String simple = generateSimpleAllOrSome(ctx, property, (Filter) value, "all");
-                if (simple != null) {
-                    return "not ( " + simple + " )";
-                } else {
-                    return "not exists " + generateSubquery(ctx, property, (Filter) value);
+            case Filter.OP_SOME:
+                if (!(value instanceof Filter)) {
+                    return null;
+                } else if (value instanceof Filter) {
+                    String simple = generateSimpleAllOrSome(ctx, property, (Filter) value, "some");
+                    if (simple != null) {
+                        return simple;
+                    } else {
+                        return "exists " + generateSubquery(ctx, property, (Filter) value);
+                    }
                 }
-            }
-        case Filter.OP_CUSTOM:
-            List<?> values = filter.getValuesAsList();
-            if (values == null) {
-                values = Collections.singletonList(null);
-            }
-            StringBuilder sbCustom = new StringBuilder();
-            appendCustomExpression(sbCustom, ctx, filter.getProperty(), values);
-            return sbCustom.toString();
-        default:
-            throw new IllegalArgumentException("Filter comparison ( " + operator + " ) is invalid.");
+            case Filter.OP_ALL:
+                if (!(value instanceof Filter)) {
+                    return null;
+                } else if (value instanceof Filter) {
+                    String simple = generateSimpleAllOrSome(ctx, property, (Filter) value, "all");
+                    if (simple != null) {
+                        return simple;
+                    } else {
+                        return "not exists " + generateSubquery(ctx, property, negate((Filter) value));
+                    }
+                }
+            case Filter.OP_NONE:
+                if (!(value instanceof Filter)) {
+                    return null;
+                } else if (value instanceof Filter) {
+                    // NOTE: Using "all" for the simple all or some is logically
+                    // incorrect. It should be "some". However,
+                    // because of a bug in how Hibernate 3.1.1 tries to simplify
+                    // "not ... some/all ...) it actually ends
+                    // up working as desired. TODO: If and when the Hibernate bug is
+                    // fixed, this should be switched to "some".
+                    String simple = generateSimpleAllOrSome(ctx, property, (Filter) value, "all");
+                    if (simple != null) {
+                        return "not ( " + simple + " )";
+                    } else {
+                        return "not exists " + generateSubquery(ctx, property, (Filter) value);
+                    }
+                }
+            case Filter.OP_CUSTOM:
+                List<?> values = filter.getValuesAsList();
+                if (values == null) {
+                    values = Collections.singletonList(null);
+                }
+                StringBuilder sbCustom = new StringBuilder();
+                appendCustomExpression(sbCustom, ctx, filter.getProperty(), values);
+                return sbCustom.toString();
+            default:
+                throw new IllegalArgumentException("Filter comparison ( " + operator + " ) is invalid.");
         }
     }
 
     /**
      * Generate a QL string for a subquery on the given property that uses the given filter. This is used by SOME, ALL and NONE filters.
-     * 
-     * @param ctx - a new context just for this sub-query
+     *
+     * @param ctx      - a new context just for this sub-query
      * @param property - the property of the main query that points to the collection on which to query
-     * @param filter - the filter to use for the where clause of the sub-query
+     * @param filter   - the filter to use for the where clause of the sub-query
      */
     protected String generateSubquery(SearchContext ctx, String property, Filter filter) {
         SearchContext ctx2 = new SearchContext();
@@ -634,21 +635,21 @@ public abstract class BaseSearchProcessor {
      * In the case of simple ALL/SOME/NONE filters, a simpler hql syntax is used (which is also compatible with collections of values).
      * Simple filters include ALL/SOME/NONE filters with exactly one sub-filter where that filter applies to the elements of the collection
      * directly (as opposed to their properties) and the operator is =, !=, <, <=, >, or >=.
-     * 
+     *
      * <p>
      * For example:
-     * 
+     *
      * <pre>
      * Filter.some(&quot;some_collection_of_strings&quot;, Filter.equal(&quot;&quot;, &quot;Bob&quot;)
      * Filter.all(&quot;some_collection_of_numbers&quot;, Filter.greaterThan(null, 23)
      * </pre>
-     * 
+     * <p>
      * If the filter meets these criteria as a simple ALL/SOME/NONE filter, the QL string for the filter will be returned. If not,
      * <code>null</code> is returned.
-     * 
-     * @param ctx - the context of the SOME/ALL/NONE filter
-     * @param property - the property of the SOME/ALL/NONE filter
-     * @param filter - the sub-filter that is the value of the SOME/ALL/NONE filter
+     *
+     * @param ctx       - the context of the SOME/ALL/NONE filter
+     * @param property  - the property of the SOME/ALL/NONE filter
+     * @param filter    - the sub-filter that is the value of the SOME/ALL/NONE filter
      * @param operation - a string used to fill in the collection operation. The value should be either "some" or "all".
      */
     protected String generateSimpleAllOrSome(SearchContext ctx, String property, Filter filter, String operation) {
@@ -658,26 +659,26 @@ public abstract class BaseSearchProcessor {
         String op;
 
         switch (filter.getOperator()) {
-        case Filter.OP_EQUAL:
-            op = " = ";
-            break;
-        case Filter.OP_NOT_EQUAL:
-            op = " != ";
-            break;
-        case Filter.OP_LESS_THAN:
-            op = " > ";
-            break;
-        case Filter.OP_LESS_OR_EQUAL:
-            op = " >= ";
-            break;
-        case Filter.OP_GREATER_THAN:
-            op = " < ";
-            break;
-        case Filter.OP_GREATER_OR_EQUAL:
-            op = " <= ";
-            break;
-        default:
-            return null;
+            case Filter.OP_EQUAL:
+                op = " = ";
+                break;
+            case Filter.OP_NOT_EQUAL:
+                op = " != ";
+                break;
+            case Filter.OP_LESS_THAN:
+                op = " > ";
+                break;
+            case Filter.OP_LESS_OR_EQUAL:
+                op = " >= ";
+                break;
+            case Filter.OP_GREATER_THAN:
+                op = " < ";
+                break;
+            case Filter.OP_GREATER_OR_EQUAL:
+                op = " <= ";
+                break;
+            default:
+                return null;
         }
 
         Object value = InternalUtil.convertIfNeeded(filter.getValue(), metadataUtil.get(ctx.rootClass, property).getJavaClass());
@@ -686,7 +687,7 @@ public abstract class BaseSearchProcessor {
 
     /**
      * Convert a property value to the expected type for that property. Ex. a Long to and Integer.
-     * 
+     *
      * @param isCollection <code>true</code> if the value is a collection of values, for example with IN and NOT_IN operators.
      * @return the converted value.
      */
@@ -868,7 +869,7 @@ public abstract class BaseSearchProcessor {
         int pos = path.lastIndexOf('.');
 
         if (pos == -1) {
-            return new String[] { "", path };
+            return new String[]{"", path};
         } else {
             String lastSegment = path.substring(pos + 1);
             String currentPath = path;
@@ -885,13 +886,13 @@ public abstract class BaseSearchProcessor {
                     // if it's an id property
                     // skip one segment
                     if (pos == -1) {
-                        return new String[] { "", path };
+                        return new String[]{"", path};
                     }
                     pos = currentPath.lastIndexOf('.', pos - 1);
                 } else if (!first && metadataUtil.get(ctx.rootClass, currentPath).isEntity()) {
                     // when we reach an entity (excluding the very first
                     // segment), we're done
-                    return new String[] { currentPath, path.substring(currentPath.length() + 1) };
+                    return new String[]{currentPath, path.substring(currentPath.length() + 1)};
                 }
                 first = false;
 
@@ -904,7 +905,7 @@ public abstract class BaseSearchProcessor {
 
                 // if that was the last segment, we're done
                 if (pos == -1) {
-                    return new String[] { "", path };
+                    return new String[]{"", path};
                 }
                 // proceed to the next segment
                 currentPath = currentPath.substring(0, pos);
@@ -966,7 +967,7 @@ public abstract class BaseSearchProcessor {
     /**
      * Given a full path to an entity (ex. department.manager), return the alias to reference that entity (ex. a4_manager). If there is no
      * alias for the given path, one will be created.
-     * 
+     *
      * @return the associated AliasNode or <code>null</code> if none.
      */
     protected AliasNode getAliasForPathIfItExists(SearchContext ctx, String path) {
@@ -1234,7 +1235,7 @@ public abstract class BaseSearchProcessor {
     }
 
     private void getFilterFromExampleRecursive(Object example, Metadata metadata, ExampleOptions options, LinkedList<String> path,
-            List<Filter> filters) {
+                                               List<Filter> filters) {
         if (metadata.isEntity() && !metadata.getIdType().isEmeddable()) {
             Object id = metadata.getIdValue(example);
             if (id != null) {
@@ -1268,15 +1269,15 @@ public abstract class BaseSearchProcessor {
                     } else if (pMetadata.isString() && (options.getLikeMode() != ExampleOptions.EXACT || options.isIgnoreCase())) {
                         String val = value.toString();
                         switch (options.getLikeMode()) {
-                        case ExampleOptions.START:
-                            val = val + "%";
-                            break;
-                        case ExampleOptions.END:
-                            val = "%" + val;
-                            break;
-                        case ExampleOptions.ANYWHERE:
-                            val = "%" + val + "%";
-                            break;
+                            case ExampleOptions.START:
+                                val = val + "%";
+                                break;
+                            case ExampleOptions.END:
+                                val = "%" + val;
+                                break;
+                            case ExampleOptions.ANYWHERE:
+                                val = "%" + val + "%";
+                                break;
                         }
                         filters.add(new Filter(listToPath(path, property), val, options.isIgnoreCase() ? Filter.OP_ILIKE : Filter.OP_LIKE));
                     } else {
