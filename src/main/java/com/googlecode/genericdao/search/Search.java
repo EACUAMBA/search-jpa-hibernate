@@ -482,9 +482,6 @@ public class Search implements IMutableSearch, Serializable {
         return resultMapClass;
     }
 
-    public List<String> getFetchesWithAlias() {
-        return null;
-    }
 
     /**
      * @param resultMode any of {@link ISearch#RESULT_AUTO}, {@link ISearch#RESULT_ARRAY}, {@link ISearch#RESULT_LIST},
@@ -628,10 +625,7 @@ public class Search implements IMutableSearch, Serializable {
         return this;
     }
 
-    public Search setFetchesWithAlias(List<String> fetchesWithAlias) {
-        this.fetchesWithAlias = fetchesWithAlias;
-        return this;
-    }
+
 
     /**
      * Adds an expression to FROM part of a JPA query. It is helpful to support inner or outer joins. It accepts curly braces expressions as
@@ -668,6 +662,24 @@ public class Search implements IMutableSearch, Serializable {
     public Search setResultMapClass(Class<?> clazz) {
         this.resultMapClass = clazz;
         return this;
+    }
+
+
+    public Search setFetchesWithAlias(List<String> fetchesWithAlias) {
+        this.fetchesWithAlias = fetchesWithAlias;
+        return this;
+    }
+
+    public List<String> getFetchesWithAlias() {
+        return this.fetchesWithAlias;
+    }
+
+    public void clearFetchsWithAlias(){
+        this.fetchesWithAlias.clear();
+    }
+
+    public void removeFetchWithAlia(String fetchWithAlia){
+        this.fetchesWithAlias.remove(fetchWithAlia);
     }
 
 }
