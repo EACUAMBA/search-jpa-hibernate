@@ -1073,11 +1073,11 @@ public class SearchUtil {
         if (property == null || "".equals(property))
             return; // null properties do nothing, don't bother to add them.
 
-        List<String> fetches = search.getFetches();
+        List<String> fetches = search.getFetchesWithAlias();
 
         if (fetches == null) {
             fetches = new ArrayList<String>();
-            search.setFetches(fetches);
+            search.setFetchesWithAlias(fetches);
         }
         if (fetches.contains(property))
             return;

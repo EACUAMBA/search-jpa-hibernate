@@ -55,6 +55,8 @@ public class FlexSearch implements Serializable {
 
     protected List<String> fetches = new ArrayList<String>();
 
+    protected List<String> fetchesWithAlias = new ArrayList<String>();
+
     protected int resultMode = ISearch.RESULT_AUTO;
 
     protected Class<?> resultMapClass;
@@ -211,4 +213,11 @@ public class FlexSearch implements Serializable {
         this.resultMapClass = resultMapClass;
     }
 
+    public void setFetchesWithAlias(List<String> fetchesWithAlias){
+        this.fetchesWithAlias = fetchesWithAlias;
+    }
+
+    public List<String> getFetchesWithAlias(){
+        return this.fetchesWithAlias;
+    }
 }

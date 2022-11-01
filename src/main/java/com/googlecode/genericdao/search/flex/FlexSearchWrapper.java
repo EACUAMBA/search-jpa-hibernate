@@ -92,8 +92,12 @@ public class FlexSearchWrapper implements ISearch {
         return search.joins;
     }
 
-    @Override
+    //@Override
     public Class<?> getResultMapClass() {
         return search.resultMapClass;
     }
+
+	public List<String> getFetchesWithAlias() {
+		return search.fetchesWithAlias;
+	}
 }
