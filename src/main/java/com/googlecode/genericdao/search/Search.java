@@ -50,6 +50,8 @@ public class Search implements IMutableSearch, Serializable {
 
     protected List<String> joins = new ArrayList<String>();
 
+    protected List<String> fetchesWithAlias = new ArrayList<String>();
+
     protected int resultMode = RESULT_AUTO;
 
     protected Class<?> resultMapClass;
@@ -480,6 +482,10 @@ public class Search implements IMutableSearch, Serializable {
         return resultMapClass;
     }
 
+    public List<String> getFetchesWithAlias() {
+        return null;
+    }
+
     /**
      * @param resultMode any of {@link ISearch#RESULT_AUTO}, {@link ISearch#RESULT_ARRAY}, {@link ISearch#RESULT_LIST},
      *            {@link ISearch#RESULT_MAP} or {@link ISearch#RESULT_SINGLE}. This setting is ignored when {@link #setResultClass(Class)}
@@ -619,6 +625,11 @@ public class Search implements IMutableSearch, Serializable {
      */
     public Search setJoins(List<String> joins) {
         this.joins = joins;
+        return this;
+    }
+
+    public Search setFetchesWithAlias(List<String> fetchesWithAlias) {
+        this.fetchesWithAlias = fetchesWithAlias;
         return this;
     }
 

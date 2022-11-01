@@ -214,4 +214,5 @@ public interface ISearch {
      */
     public Class<?> getResultMapClass();
 
+    List<String> getFetchesWithAlias();
 }

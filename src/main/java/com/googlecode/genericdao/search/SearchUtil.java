@@ -1,11 +1,11 @@
 /* Copyright 2013 David Wolverton
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * Utilities for working with searches {@link ISearch}, {@link IMutableSearch}.
- * 
+ *
  * @author dwolverton
  */
 public class SearchUtil {
@@ -137,7 +137,7 @@ public class SearchUtil {
 
     /**
      * Add a filter that uses the AND operator.
-     * 
+     *
      * <p>
      * This takes a variable number of parameters. Any number of <code>Filter
      * </code>s can be specified.
@@ -190,7 +190,7 @@ public class SearchUtil {
 
     /**
      * Add a filter that uses the IN operator.
-     * 
+     *
      * <p>
      * This takes a variable number of parameters. Any number of values can be specified.
      */
@@ -249,7 +249,7 @@ public class SearchUtil {
 
     /**
      * Add a filter that uses the NOT IN operator.
-     * 
+     *
      * <p>
      * This takes a variable number of parameters. Any number of values can be specified.
      */
@@ -280,7 +280,7 @@ public class SearchUtil {
 
     /**
      * Add a filter that uses the OR operator.
-     * 
+     *
      * <p>
      * This takes a variable number of parameters. Any number of <code>Filter
      * </code>s can be specified.
@@ -298,7 +298,7 @@ public class SearchUtil {
 
     /**
      * Add a filter that uses a custom expression.
-     * 
+     *
      * @see {@link Filter#custom(String)}
      */
     public static void addFilterCustom(IMutableSearch search, String expression) {
@@ -307,7 +307,7 @@ public class SearchUtil {
 
     /**
      * Add a filter that uses a custom expression.
-     * 
+     *
      * @see {@link Filter#custom(String, Object...)}
      */
     public static void addFilterCustom(IMutableSearch search, String expression, Object... values) {
@@ -316,7 +316,7 @@ public class SearchUtil {
 
     /**
      * Add a filter that uses a custom expression.
-     * 
+     *
      * @see {@link Filter#custom(String, Collection)}
      */
     public static void addFilterCustom(IMutableSearch search, String expression, Collection<?> values) {
@@ -393,6 +393,11 @@ public class SearchUtil {
     public static void removeFetch(IMutableSearch search, String property) {
         if (search.getFetches() != null)
             search.getFetches().remove(property);
+    }
+
+    public static void removeFetchWithAlia(IMutableSearch search, String property) {
+        if (search.getFetches() != null)
+            search.getFetchesWithAlias().remove(property);
     }
 
     public static void removeField(IMutableSearch search, Field field) {
@@ -501,7 +506,13 @@ public class SearchUtil {
             search.getSorts().clear();
     }
 
+    public static void clearFetchsWithAlias(IMutableSearch search) {
+        if (search.getFetchesWithAlias() != null)
+            search.getFetchesWithAlias().clear();
+    }
+
     // ---------- Merge ----------
+
     /**
      * Modify the search by adding the given sorts before the current sorts in the search.
      */
@@ -717,7 +728,7 @@ public class SearchUtil {
     /**
      * Calculate the first result to use given the <code>firstResult</code>, <code>page</code> and <code>maxResults</code> values of the
      * search object.
-     * 
+     *
      * <p>
      * The calculation is as follows:
      * <ul>
@@ -860,24 +871,24 @@ public class SearchUtil {
         sb.append("] {\n resultMode: ");
 
         switch (search.getResultMode()) {
-        case RESULT_AUTO:
-            sb.append("AUTO");
-            break;
-        case RESULT_ARRAY:
-            sb.append("ARRAY");
-            break;
-        case RESULT_LIST:
-            sb.append("LIST");
-            break;
-        case RESULT_MAP:
-            sb.append("MAP");
-            break;
-        case RESULT_SINGLE:
-            sb.append("SINGLE");
-            break;
-        default:
-            sb.append("**INVALID RESULT MODE: (" + search.getResultMode() + ")**");
-            break;
+            case RESULT_AUTO:
+                sb.append("AUTO");
+                break;
+            case RESULT_ARRAY:
+                sb.append("ARRAY");
+                break;
+            case RESULT_LIST:
+                sb.append("LIST");
+                break;
+            case RESULT_MAP:
+                sb.append("MAP");
+                break;
+            case RESULT_SINGLE:
+                sb.append("SINGLE");
+                break;
+            default:
+                sb.append("**INVALID RESULT MODE: (" + search.getResultMode() + ")**");
+                break;
         }
 
         sb.append(",\n disjunction: ").append(search.isDisjunction());
@@ -912,7 +923,7 @@ public class SearchUtil {
     /**
      * Visit each non-null item is a list. Each item may be replaced by the visitor. The modified list is returned. If removeNulls is true,
      * any null elements will be removed from the final list.
-     * 
+     *
      * <p>
      * If there are any modifications to be made to the list a new list is made with the changes so that the original list remains
      * unchanged. If no changes are made, the original list is returned.
@@ -962,7 +973,7 @@ public class SearchUtil {
      * Walk through a list of filters and all the sub filters, visiting each filter in the tree. A FilterVisitor is used to visit each
      * filter. The FilterVisitor may replace the Filter that is is visiting. If it does, a new tree and list of Filters will be created for
      * every part of the tree that is affected, thus preserving the original tree.
-     * 
+     *
      * @return if any changes have been made, the new list of Filters; if not, the original list.
      */
     public static List<Filter> walkFilters(List<Filter> filters, FilterVisitor visitor, boolean removeNulls) {
@@ -991,7 +1002,7 @@ public class SearchUtil {
      * Walk a filter and all its sub filters, visiting each filter in the tree. A FilterVisitor is used to visit each filter. The
      * FilterVisitor may replace the Filter that is is visiting. If it does, a new tree and will be created for every part of the tree that
      * is affected, thus preserving the original tree.
-     * 
+     *
      * @return if any changes have been made, the new Filter; if not, the original Filter.
      */
     @SuppressWarnings("unchecked")
@@ -1035,10 +1046,10 @@ public class SearchUtil {
     }
 
     /**
-     * @author Mohsen Saboorian
-     * @since 1.3.0
      * @param search
      * @param join
+     * @author Mohsen Saboorian
+     * @since 1.3.0
      */
     public static void addJoin(IMutableSearch search, String join) {
         if (join == null || "".equals(join))
@@ -1050,6 +1061,53 @@ public class SearchUtil {
             search.setJoins(joins);
         }
         joins.add(join);
+    }
+
+    /**
+     * This feature will help you add fetches with alias like this {"from cats c 'join c.ownersList owner' where owner.nome like "%uiz%""};
+     * @since 1.3.1
+     * @author Edilson Alexandre Cuamba
+     */
+
+    public static void addFetchWithAlia(IMutableSearch search, String property) {
+        if (property == null || "".equals(property))
+            return; // null properties do nothing, don't bother to add them.
+
+        List<String> fetches = search.getFetches();
+
+        if (fetches == null) {
+            fetches = new ArrayList<String>();
+            search.setFetches(fetches);
+        }
+        if (fetches.contains(property))
+            return;
+        fetches.add(property);
+    }
+
+    public static void addFetchesWithAlias(IMutableSearch search, String... properties) {
+        if (properties != null) {
+            for (String property : properties) {
+                addFetchWithAlia(search, property);
+            }
+        }
+    }
+
+    public static void mergeFetchesWithAlias(IMutableSearch search, List<String> fetchesWithAlias) {
+        List<String> list = search.getFetchesWithAlias();
+        if (list == null) {
+            list = new ArrayList<String>();
+            search.setFetchesWithAlias(list);
+        }
+
+        for (String fetch : fetchesWithAlias) {
+            if (!list.contains(fetch)) {
+                list.add(fetch);
+            }
+        }
+    }
+
+    public static void mergeFetchesWithAlias(IMutableSearch search, String... fetchesWithAlias) {
+        mergeFetchesWithAlias(search, Arrays.asList(fetchesWithAlias));
     }
 
 }

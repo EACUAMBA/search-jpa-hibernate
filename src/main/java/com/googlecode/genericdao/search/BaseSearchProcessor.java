@@ -100,6 +100,7 @@ public abstract class BaseSearchProcessor {
         List<Field> fields = checkAndCleanFields(search.getFields());
 
         applyFetches(ctx, checkAndCleanFetches(search.getFetches()), fields);
+        applyFetchesWithAlias(ctx, checkAndCleanFetches(search.getFetchesWithAlias()), fields);
 
         String select = generateSelectClause(ctx, fields, search.isDistinct());
         String where = generateWhereClause(ctx, checkAndCleanFilters(search.getFilters()), search.isDisjunction());
@@ -300,8 +301,8 @@ public abstract class BaseSearchProcessor {
             // apply fetches
             boolean hasFetches = false, hasFields = false;
             for (String fetch : fetches) {
-                if (!fetch.contains(" "))
-                    getOrCreateAlias(ctx, fetch, true);
+
+                getOrCreateAlias(ctx, fetch, true);
                 hasFetches = true;
             }
             if (hasFetches && fields != null) {
@@ -372,7 +373,8 @@ public abstract class BaseSearchProcessor {
                 sb.append(node.parent.alias);
                 sb.append(".");
                 sb.append(node.property);
-                sb.append(" as ");
+                if (node.putAS)
+                    sb.append(" as ");
                 sb.append(node.alias);
             }
             for (AliasNode child : node.children) {
@@ -991,6 +993,7 @@ public abstract class BaseSearchProcessor {
         boolean fetch;
         AliasNode parent;
         List<AliasNode> children = new ArrayList<AliasNode>();
+        boolean putAS = true;
 
         AliasNode(String property, String alias) {
             this.property = property;
@@ -1296,4 +1299,84 @@ public abstract class BaseSearchProcessor {
         sb.append(lastProperty);
         return sb.toString();
     }
+
+
+    /**
+     * Apply the fetch list to the alias tree in the search context.
+     * @since 1.3.1
+     * @author Edilson Alexandre Cuamba
+     */
+    protected void applyFetchesWithAlias(SearchContext ctx, List<String> fetchesWithAlias, List<Field> fields) {
+        if (fetchesWithAlias != null) {
+            // apply fetchesWithAlias
+            boolean hasFetches = false, hasFields = false;
+            for (String fetchWithAlia : fetchesWithAlias) {
+
+                getOrCreateAliasForFetchWithAlias(ctx, fetchWithAlia, true);
+                hasFetches = true;
+            }
+            if (hasFetches && fields != null) {
+                // don't fetch nodes whose ancestors aren't found in the select
+                // clause
+                List<String> fieldProps = new ArrayList<String>();
+                for (Field field : fields) {
+                    if (field.getOperator() == Field.OP_PROPERTY) {
+                        fieldProps.add(field.getProperty() + ".");
+                    }
+                    hasFields = true;
+                }
+                if (hasFields) {
+                    for (AliasNode node : ctx.aliases.values()) {
+                        if (node.fetch) {
+                            // make sure it has an ancestor in the select clause
+                            boolean hasAncestor = false;
+                            for (String field : fieldProps) {
+                                if (node.getFullPath().startsWith(field)) {
+                                    hasAncestor = true;
+                                    break;
+                                }
+                            }
+                            if (!hasAncestor)
+                                node.fetch = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Given a full path to an entity (ex. department.manager), return the alias to reference that entity (ex. a4_manager). If there is no
+     * alias for the given path, one will be created.
+     */
+    protected AliasNode getOrCreateAliasForFetchWithAlias(SearchContext ctx, String path, boolean setFetch) {
+        AliasNode foundNode = getAliasForPathIfItExists(ctx, path);
+
+        if (foundNode != null) {
+            if (setFetch)
+                setFetchOnAliasNodeAndAllAncestors(foundNode);
+
+            return foundNode;
+        } else {
+            String[] parts = path.trim().split("[\\s]");
+            parts = new String[]{"", parts[0], parts[1]};
+
+            String alias = parts[2];
+
+            AliasNode node = new AliasNode(parts[1], alias);
+            node.putAS = false;
+
+            // set up path recursively
+            getOrCreateAlias(ctx, parts[0], setFetch).addChild(node);
+
+            if (setFetch)
+                setFetchOnAliasNodeAndAllAncestors(node);
+
+            ctx.aliases.put(path, node);
+
+            return node;
+        }
+    }
+
+
 }
