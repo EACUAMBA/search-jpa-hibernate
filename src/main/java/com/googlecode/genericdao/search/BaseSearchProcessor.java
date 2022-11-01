@@ -375,6 +375,7 @@ public abstract class BaseSearchProcessor {
                 sb.append(node.property);
                 if (node.putAS)
                     sb.append(" as ");
+                else sb.append(" ");
                 sb.append(node.alias);
             }
             for (AliasNode child : node.children) {
@@ -1303,8 +1304,9 @@ public abstract class BaseSearchProcessor {
 
     /**
      * Apply the fetch list to the alias tree in the search context.
-     * @since 1.3.1
+     *
      * @author Edilson Alexandre Cuamba
+     * @since 1.3.1
      */
     protected void applyFetchesWithAlias(SearchContext ctx, List<String> fetchesWithAlias, List<Field> fields) {
         if (fetchesWithAlias != null) {
