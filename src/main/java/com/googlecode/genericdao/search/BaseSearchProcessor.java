@@ -867,7 +867,7 @@ public abstract class BaseSearchProcessor {
 
         if (pos == -1) {
             String[] paths = path.split("[\\s]");
-            if (paths.length > 2)
+            if (paths.length >= 2)
                 return new String[]{"", paths[0], paths[1]};
             else
                 return new String[]{"", paths[0]};
