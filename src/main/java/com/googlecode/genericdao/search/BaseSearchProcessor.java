@@ -135,9 +135,10 @@ public abstract class BaseSearchProcessor {
             throw new NullPointerException("The entity class for a search cannot be null");
 
         SearchContext ctx = new SearchContext(entityClass, rootAlias, paramList);
+        applyFetches(ctx, checkAndCleanFetches(search.getFetches()), new ArrayList<>());
         applyFetchesWithAlias(ctx, checkAndCleanFetches(search.getFetchesWithAlias()), new ArrayList<>());
         String where = generateWhereClause(ctx, checkAndCleanFilters(search.getFilters()), search.isDisjunction());
-        String from = generateFromClause(ctx, false);
+        String from = generateFromClause(ctx, true);
         String join = generateJoin(ctx, search.getJoins());
 
         boolean useOperator = false, notUseOperator = false;
