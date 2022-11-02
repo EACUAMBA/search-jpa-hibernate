@@ -138,7 +138,7 @@ public abstract class BaseSearchProcessor {
         applyFetches(ctx, checkAndCleanFetches(search.getFetches()), new ArrayList<>());
         applyFetchesWithAlias(ctx, checkAndCleanFetches(search.getFetchesWithAlias()), new ArrayList<>());
         String where = generateWhereClause(ctx, checkAndCleanFilters(search.getFilters()), search.isDisjunction());
-        String from = generateFromClause(ctx, true);
+        String from = generateFromClause(ctx, false);
         String join = generateJoin(ctx, search.getJoins());
 
         boolean useOperator = false, notUseOperator = false;
