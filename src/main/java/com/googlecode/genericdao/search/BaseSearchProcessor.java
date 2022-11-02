@@ -866,7 +866,10 @@ public abstract class BaseSearchProcessor {
 
         if (pos == -1) {
             String[] paths = path.split("[\\s]");
-            return new String[]{"", paths[0], paths[1]};
+            if (paths.length > 2)
+                return new String[]{"", paths[0], paths[1]};
+            else
+                return new String[]{"", paths[0]};
         } else {
             String lastSegment = path.substring(pos + 1);
             String currentPath = path;
@@ -950,8 +953,7 @@ public abstract class BaseSearchProcessor {
             if (parts.length <= 2) {
                 alias = "a" + (ctx.nextAliasNum++) + "_" + (pos == -1 ? parts[1] : parts[1].substring(pos + 1));
                 node = new AliasNode(parts[1], alias);
-            }
-            else {
+            } else {
                 alias = parts[2];
                 node = new AliasNode(parts[1], alias);
                 node.putAS = false;
