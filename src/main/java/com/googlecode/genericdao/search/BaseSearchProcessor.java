@@ -14,20 +14,12 @@
  */
 package com.googlecode.genericdao.search;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class provides two methods for generating query language to fulfill an <code>ISearch</code>.
@@ -964,8 +956,6 @@ public abstract class BaseSearchProcessor {
                 node = new AliasNode(parts[1], alias);
                 node.putAS = false;
             }
-
-
 
             // set up path recursively
             getOrCreateAlias(ctx, parts[0], setFetch).addChild(node);
