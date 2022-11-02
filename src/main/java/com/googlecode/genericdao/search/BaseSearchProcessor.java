@@ -963,10 +963,8 @@ public abstract class BaseSearchProcessor {
             // set up path recursively
             getOrCreateAlias(ctx, parts[0], setFetch).addChild(node);
 
-            if (setFetch && (parts.length <= 2))
+            if (setFetch)
                 setFetchOnAliasNodeAndAllAncestors(node);
-            else
-                node.fetch = false;
 
 
             ctx.aliases.put(path, node);
