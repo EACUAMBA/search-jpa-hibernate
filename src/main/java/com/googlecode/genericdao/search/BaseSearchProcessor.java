@@ -866,13 +866,15 @@ public abstract class BaseSearchProcessor {
      * (department.manager.salary) would return [department.manager, salary].
      */
     protected String[] splitPath(SearchContext ctx, String path) {
+        path = path.trim();
         if (path == null || "".equals(path))
             return null;
 
         int pos = path.lastIndexOf('.');
 
         if (pos == -1) {
-            return new String[]{"", path};
+            String[] paths = path.split("[\\s]");
+            return new String[]{"", paths[0], paths[1]};
         } else {
             String lastSegment = path.substring(pos + 1);
             String currentPath = path;
@@ -951,9 +953,19 @@ public abstract class BaseSearchProcessor {
 
             int pos = parts[1].lastIndexOf('.');
 
-            String alias = "a" + (ctx.nextAliasNum++) + "_" + (pos == -1 ? parts[1] : parts[1].substring(pos + 1));
+            String alias;
+            AliasNode node;
+            if (parts.length <= 2) {
+                alias = "a" + (ctx.nextAliasNum++) + "_" + (pos == -1 ? parts[1] : parts[1].substring(pos + 1));
+                node = new AliasNode(parts[1], alias);
+            }
+            else {
+                alias = parts[2];
+                node = new AliasNode(parts[1], alias);
+                node.putAS = false;
+            }
 
-            AliasNode node = new AliasNode(parts[1], alias);
+
 
             // set up path recursively
             getOrCreateAlias(ctx, parts[0], setFetch).addChild(node);
@@ -1369,7 +1381,7 @@ public abstract class BaseSearchProcessor {
             node.putAS = false;
 
             // set up path recursively
-            getOrCreateAlias(ctx, parts[0], setFetch).addChild(node);
+            getOrCreateAliasForFetchWithAlias(ctx, parts[0], setFetch).addChild(node);
 
             if (setFetch)
                 setFetchOnAliasNodeAndAllAncestors(node);

@@ -664,6 +664,9 @@ public class Search implements IMutableSearch, Serializable {
         return this;
     }
 
+    public void addFetchWithAlia(String property){
+        SearchUtil.addFetchWithAlia(this, property);
+    }
 
     public Search setFetchesWithAlias(List<String> fetchesWithAlias) {
         this.fetchesWithAlias = fetchesWithAlias;
