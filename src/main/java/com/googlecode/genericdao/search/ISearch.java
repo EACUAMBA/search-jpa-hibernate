@@ -70,7 +70,7 @@ public interface ISearch {
      * 
      * @see #getResultMode()
      */
-    public static final int RESULT_AUTO = 0;
+    int RESULT_AUTO = 0;
 
     /**
      * Value for result mode. <code>RESULT_ARRAY</code> returns each result as an Object array (<code>Object[]</code>) with the entries
@@ -88,7 +88,7 @@ public interface ISearch {
      * 
      * @see #getResultMode()
      */
-    public static final int RESULT_ARRAY = 1;
+    int RESULT_ARRAY = 1;
 
     /**
      * Value for result mode. <code>RESULT_LIST</code> returns each result as a list of Objects (<code>List&lt;Object&gt;</Code> ). Here's
@@ -106,7 +106,7 @@ public interface ISearch {
      * 
      * @see #getResultMode()
      */
-    public static final int RESULT_LIST = 2;
+    int RESULT_LIST = 2;
 
     /**
      * Value for result mode. <code>RESULT_MAP</code> returns each row as a map with properties' names or keys for keys to the corresponding
@@ -124,7 +124,7 @@ public interface ISearch {
      * 
      * @see #getResultMode()
      */
-    public static final int RESULT_MAP = 3;
+    int RESULT_MAP = 3;
 
     /**
      * Value for result mode. <code>RESULT_SINGLE</code> - Exactly one field or no fields must be specified to use this result mode. The
@@ -141,7 +141,7 @@ public interface ISearch {
      * 
      * @see #getResultMode()
      */
-    public static final int RESULT_SINGLE = 4;
+    int RESULT_SINGLE = 4;
 
     /**
      * Zero based index of first result record to return.
@@ -149,7 +149,7 @@ public interface ISearch {
      * <p>
      * <code>&lt;= 0</code> for unspecified value.
      */
-    public int getFirstResult();
+    int getFirstResult();
 
     /**
      * The maximum number of records to return. Also used as page size when calculating the first record to return based on
@@ -158,7 +158,7 @@ public interface ISearch {
      * <p>
      * <code>&lt;= 0</code> for unspecified value.
      */
-    public int getMaxResults();
+    int getMaxResults();
 
     /**
      * Zero based index of the page of records to return. The size of a page is determined by <code>maxResults</code>. If both
@@ -172,27 +172,27 @@ public interface ISearch {
      * <p>
      * <code>&lt;= 0</code> for unspecified value.
      */
-    public int getPage();
+    int getPage();
 
-    public Class<?> getSearchClass();
+    Class<?> getSearchClass();
 
-    public List<Filter> getFilters();
+    List<Filter> getFilters();
 
-    public boolean isDisjunction();
+    boolean isDisjunction();
 
-    public List<Sort> getSorts();
+    List<Sort> getSorts();
 
-    public List<Field> getFields();
+    List<Field> getFields();
 
     /**
      * @since 1.3.0
      * @return joins (inner or outer)
      */
-    public List<String> getJoins();
+    List<String> getJoins();
 
-    public boolean isDistinct();
+    boolean isDistinct();
 
-    public List<String> getFetches();
+    List<String> getFetches();
 
     /**
      * Result mode tells the search what form to use for the results. Options include <code>RESULT_AUTO</code>, <code>RESULT_ARRAY</code>,
@@ -206,13 +206,11 @@ public interface ISearch {
      * @see #RESULT_MAP
      * @see #RESULT_SINGLE
      */
-    public int getResultMode();
+    int getResultMode();
 
     /**
      * @since 1.3.0
      * @return result map class. When resultMapClass is set {@link #getResultMode()} is ignored.
      */
-    public Class<?> getResultMapClass();
-
-    List<String> getFetchesWithAlias();
+    Class<?> getResultMapClass();
 }

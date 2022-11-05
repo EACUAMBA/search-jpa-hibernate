@@ -36,21 +36,21 @@ public class Search implements IMutableSearch, Serializable {
 
     protected Class<?> searchClass;
 
-    protected List<Filter> filters = new ArrayList<Filter>();
+    protected List<Filter> filters = new ArrayList<>();
 
     protected boolean disjunction;
 
-    protected List<Sort> sorts = new ArrayList<Sort>();
+    protected List<Sort> sorts = new ArrayList<>();
 
-    protected List<Field> fields = new ArrayList<Field>();
+    protected List<Field> fields = new ArrayList<>();
 
     protected boolean distinct;
 
-    protected List<String> fetches = new ArrayList<String>();
+    protected List<String> fetches = new ArrayList<>();
 
-    protected List<String> joins = new ArrayList<String>();
+    protected List<String> joins = new ArrayList<>();
 
-    protected List<String> fetchesWithAlias = new ArrayList<String>();
+    protected List<String> fetchesWithAlias = new ArrayList<>();
 
     protected int resultMode = RESULT_AUTO;
 
@@ -617,8 +617,8 @@ public class Search implements IMutableSearch, Serializable {
 
     /**
      * @since 1.3.0
-     * @param customFroms
-     * @return
+     * @param joins the joins with the properties.
+     * @return the search object
      */
     public Search setJoins(List<String> joins) {
         this.joins = joins;
@@ -662,10 +662,6 @@ public class Search implements IMutableSearch, Serializable {
     public Search setResultMapClass(Class<?> clazz) {
         this.resultMapClass = clazz;
         return this;
-    }
-
-    public void addFetchWithAlia(String property){
-        SearchUtil.addFetchWithAlia(this, property);
     }
 
     public Search setFetchesWithAlias(List<String> fetchesWithAlias) {

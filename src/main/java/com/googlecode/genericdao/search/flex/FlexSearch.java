@@ -14,14 +14,14 @@
  */
 package com.googlecode.genericdao.search.flex;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.googlecode.genericdao.search.Field;
 import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.ISearch;
 import com.googlecode.genericdao.search.Sort;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a search DTO that is suitable for both Flex and Java. Is can be used to pass search parameters to and from a remote Flex client.
@@ -211,13 +211,5 @@ public class FlexSearch implements Serializable {
      */
     public void setResultMapClass(Class<?> resultMapClass) {
         this.resultMapClass = resultMapClass;
-    }
-
-    public void setFetchesWithAlias(List<String> fetchesWithAlias){
-        this.fetchesWithAlias = fetchesWithAlias;
-    }
-
-    public List<String> getFetchesWithAlias(){
-        return this.fetchesWithAlias;
     }
 }

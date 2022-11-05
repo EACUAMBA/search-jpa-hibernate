@@ -14,17 +14,9 @@
  */
 package com.googlecode.genericdao.search;
 
-import static com.googlecode.genericdao.search.ISearch.RESULT_ARRAY;
-import static com.googlecode.genericdao.search.ISearch.RESULT_AUTO;
-import static com.googlecode.genericdao.search.ISearch.RESULT_LIST;
-import static com.googlecode.genericdao.search.ISearch.RESULT_MAP;
-import static com.googlecode.genericdao.search.ISearch.RESULT_SINGLE;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import static com.googlecode.genericdao.search.ISearch.*;
 
 /**
  * Utilities for working with searches {@link ISearch}, {@link IMutableSearch}.
@@ -40,7 +32,7 @@ public class SearchUtil {
 
         List<String> fetches = search.getFetches();
         if (fetches == null) {
-            fetches = new ArrayList<String>();
+            fetches = new ArrayList<>();
             search.setFetches(fetches);
         }
         fetches.add(property);
@@ -57,7 +49,7 @@ public class SearchUtil {
     public static void addField(IMutableSearch search, Field field) {
         List<Field> fields = search.getFields();
         if (fields == null) {
-            fields = new ArrayList<Field>();
+            fields = new ArrayList<>();
             search.setFields(fields);
         }
         fields.add(field);
@@ -114,7 +106,7 @@ public class SearchUtil {
     public static void addFilter(IMutableSearch search, Filter filter) {
         List<Filter> filters = search.getFilters();
         if (filters == null) {
-            filters = new ArrayList<Filter>();
+            filters = new ArrayList<>();
             search.setFilters(filters);
         }
         filters.add(filter);
@@ -299,7 +291,7 @@ public class SearchUtil {
     /**
      * Add a filter that uses a custom expression.
      *
-     * @see {@link Filter#custom(String)}
+     * @see Filter#custom(String)
      */
     public static void addFilterCustom(IMutableSearch search, String expression) {
         addFilter(search, Filter.custom(expression));
@@ -308,7 +300,7 @@ public class SearchUtil {
     /**
      * Add a filter that uses a custom expression.
      *
-     * @see {@link Filter#custom(String, Object...)}
+     * @see Filter#custom(String, Object...)
      */
     public static void addFilterCustom(IMutableSearch search, String expression, Object... values) {
         addFilter(search, Filter.custom(expression, values));
@@ -317,7 +309,7 @@ public class SearchUtil {
     /**
      * Add a filter that uses a custom expression.
      *
-     * @see {@link Filter#custom(String, Collection)}
+     * @see Filter#custom(String, Collection)
      */
     public static void addFilterCustom(IMutableSearch search, String expression, Collection<?> values) {
         addFilter(search, Filter.custom(expression, values));
@@ -330,7 +322,7 @@ public class SearchUtil {
 
         List<Sort> sorts = search.getSorts();
         if (sorts == null) {
-            sorts = new ArrayList<Sort>();
+            sorts = new ArrayList<>();
             search.setSorts(sorts);
         }
         sorts.add(sort);
@@ -395,10 +387,6 @@ public class SearchUtil {
             search.getFetches().remove(property);
     }
 
-    public static void removeFetchWithAlia(IMutableSearch search, String property) {
-        if (search.getFetches() != null)
-            search.getFetchesWithAlias().remove(property);
-    }
 
     public static void removeField(IMutableSearch search, Field field) {
         if (search.getFields() != null)
@@ -409,23 +397,14 @@ public class SearchUtil {
         if (search.getFields() == null)
             return;
 
-        Iterator<Field> itr = search.getFields().iterator();
-        while (itr.hasNext()) {
-            if (itr.next().getProperty().equals(property))
-                itr.remove();
-        }
+        search.getFields().removeIf(field -> field.getProperty().equals(property));
     }
 
     public static void removeField(IMutableSearch search, String property, String key) {
         if (search.getFields() == null)
             return;
 
-        Iterator<Field> itr = search.getFields().iterator();
-        while (itr.hasNext()) {
-            Field field = itr.next();
-            if (field.getProperty().equals(property) && field.getKey().equals(key))
-                itr.remove();
-        }
+        search.getFields().removeIf(field -> field.getProperty().equals(property) && field.getKey().equals(key));
     }
 
     public static void removeFilter(IMutableSearch search, Filter filter) {
@@ -440,11 +419,7 @@ public class SearchUtil {
     public static void removeFiltersOnProperty(IMutableSearch search, String property) {
         if (property == null || search.getFilters() == null)
             return;
-        Iterator<Filter> itr = search.getFilters().iterator();
-        while (itr.hasNext()) {
-            if (property.equals(itr.next().getProperty()))
-                itr.remove();
-        }
+        search.getFilters().removeIf(filter -> property.equals(filter.getProperty()));
     }
 
     public static void removeSort(IMutableSearch search, Sort sort) {
@@ -455,11 +430,7 @@ public class SearchUtil {
     public static void removeSort(IMutableSearch search, String property) {
         if (property == null || search.getSorts() == null)
             return;
-        Iterator<Sort> itr = search.getSorts().iterator();
-        while (itr.hasNext()) {
-            if (property.equals(itr.next().getProperty()))
-                itr.remove();
-        }
+        search.getSorts().removeIf(sort -> property.equals(sort.getProperty()));
     }
 
     // ---------- Clear ----------
@@ -506,11 +477,6 @@ public class SearchUtil {
             search.getSorts().clear();
     }
 
-    public static void clearFetchsWithAlias(IMutableSearch search) {
-        if (search.getFetchesWithAlias() != null)
-            search.getFetchesWithAlias().clear();
-    }
-
     // ---------- Merge ----------
 
     /**
@@ -519,7 +485,7 @@ public class SearchUtil {
     public static void mergeSortsBefore(IMutableSearch search, List<Sort> sorts) {
         List<Sort> list = search.getSorts();
         if (list == null) {
-            list = new ArrayList<Sort>();
+            list = new ArrayList<>();
             search.setSorts(list);
         }
 
@@ -558,7 +524,7 @@ public class SearchUtil {
     public static void mergeSortsAfter(IMutableSearch search, List<Sort> sorts) {
         List<Sort> list = search.getSorts();
         if (list == null) {
-            list = new ArrayList<Sort>();
+            list = new ArrayList<>();
             search.setSorts(list);
         }
 
@@ -569,8 +535,8 @@ public class SearchUtil {
             for (Sort sort : sorts) {
                 if (sort.getProperty() != null) {
                     boolean found = false;
-                    for (int i = 0; i < origLen; i++) {
-                        if (sort.getProperty().equals(list.get(i).getProperty())) {
+                    for (Sort value : list) {
+                        if (sort.getProperty().equals(value.getProperty())) {
                             found = true;
                             break;
                         }
@@ -597,7 +563,7 @@ public class SearchUtil {
     public static void mergeFetches(IMutableSearch search, List<String> fetches) {
         List<String> list = search.getFetches();
         if (list == null) {
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
             search.setFetches(list);
         }
 
@@ -621,7 +587,7 @@ public class SearchUtil {
     public static void mergeFiltersAnd(IMutableSearch search, List<Filter> filters) {
         List<Filter> list = search.getFilters();
         if (list == null) {
-            list = new ArrayList<Filter>();
+            list = new ArrayList<>();
             search.setFilters(list);
         }
 
@@ -629,7 +595,7 @@ public class SearchUtil {
             search.setDisjunction(false);
             list.addAll(filters);
         } else {
-            search.setFilters(new ArrayList<Filter>());
+            search.setFilters(new ArrayList<>());
 
             // add the previous filters with an OR
             Filter orFilter = Filter.or();
@@ -655,7 +621,7 @@ public class SearchUtil {
     public static void mergeFiltersOr(IMutableSearch search, List<Filter> filters) {
         List<Filter> list = search.getFilters();
         if (list == null) {
-            list = new ArrayList<Filter>();
+            list = new ArrayList<>();
             search.setFilters(list);
         }
 
@@ -663,7 +629,7 @@ public class SearchUtil {
             search.setDisjunction(true);
             list.addAll(filters);
         } else {
-            search.setFilters(new ArrayList<Filter>());
+            search.setFilters(new ArrayList<>());
 
             // add the previous filters with an AND
             Filter orFilter = Filter.and();
@@ -689,7 +655,7 @@ public class SearchUtil {
     public static void mergeFieldsBefore(IMutableSearch search, List<Field> fields) {
         List<Field> list = search.getFields();
         if (list == null) {
-            list = new ArrayList<Field>();
+            list = new ArrayList<>();
             search.setFields(list);
         }
 
@@ -709,7 +675,7 @@ public class SearchUtil {
     public static void mergeFieldsAfter(IMutableSearch search, List<Field> fields) {
         List<Field> list = search.getFields();
         if (list == null) {
-            list = new ArrayList<Field>();
+            list = new ArrayList<>();
             search.setFields(list);
         }
 
@@ -778,24 +744,19 @@ public class SearchUtil {
     public static <T extends IMutableSearch> T copy(ISearch source, T destination) {
         shallowCopy(source, destination);
 
-        ArrayList<String> fetches = new ArrayList<String>();
-        fetches.addAll(source.getFetches());
+        ArrayList<String> fetches = new ArrayList<>(source.getFetches());
         destination.setFetches(fetches);
 
-        ArrayList<Field> fields = new ArrayList<Field>();
-        fields.addAll(source.getFields());
+        ArrayList<Field> fields = new ArrayList<>(source.getFields());
         destination.setFields(fields);
 
-        ArrayList<Filter> filters = new ArrayList<Filter>();
-        filters.addAll(source.getFilters());
+        ArrayList<Filter> filters = new ArrayList<>(source.getFilters());
         destination.setFilters(filters);
 
-        ArrayList<Sort> sorts = new ArrayList<Sort>();
-        sorts.addAll(source.getSorts());
+        ArrayList<Sort> sorts = new ArrayList<>(source.getSorts());
         destination.setSorts(sorts);
 
-        ArrayList<String> joins = new ArrayList<String>();
-        joins.addAll(source.getJoins());
+        ArrayList<String> joins = new ArrayList<>(source.getJoins());
         destination.setJoins(joins);
 
         return destination;
@@ -863,7 +824,7 @@ public class SearchUtil {
         StringBuilder sb = new StringBuilder("Search(");
         sb.append(search.getSearchClass());
         if (search.getJoins() != null && search.getJoins().size() > 0) {
-            sb.append("), customs: (" + search.getJoins());
+            sb.append("), customs: (").append(search.getJoins());
         }
         sb.append(")[first: ").append(search.getFirstResult());
         sb.append(", page: ").append(search.getPage());
@@ -887,7 +848,7 @@ public class SearchUtil {
                 sb.append("SINGLE");
                 break;
             default:
-                sb.append("**INVALID RESULT MODE: (" + search.getResultMode() + ")**");
+                sb.append("**INVALID RESULT MODE: (").append(search.getResultMode()).append(")**");
                 break;
         }
 
@@ -939,7 +900,7 @@ public class SearchUtil {
             T result = visitor.visit(item);
             if (result != item || (removeNulls && result == null)) {
                 if (copy == null) {
-                    copy = new ArrayList<T>(list.size());
+                    copy = new ArrayList<>(list.size());
                     copy.addAll(list);
                 }
                 copy.set(i, result);
@@ -984,8 +945,8 @@ public class SearchUtil {
      * Used in walkFilters
      */
     private static final class FilterListVisitor extends ItemVisitor<Filter> {
-        private FilterVisitor visitor;
-        private boolean removeNulls;
+        private final FilterVisitor visitor;
+        private final boolean removeNulls;
 
         public FilterListVisitor(FilterVisitor visitor, boolean removeNulls) {
             this.visitor = visitor;
@@ -1046,8 +1007,8 @@ public class SearchUtil {
     }
 
     /**
-     * @param search
-     * @param join
+     * @param search the search object
+     * @param join the join string function like <code>inner join ActorList</code>
      * @author Mohsen Saboorian
      * @since 1.3.0
      */
@@ -1057,57 +1018,9 @@ public class SearchUtil {
 
         List<String> joins = search.getJoins();
         if (joins == null) {
-            joins = new ArrayList<String>();
+            joins = new ArrayList<>();
             search.setJoins(joins);
         }
         joins.add(join);
     }
-
-    /**
-     * This feature will help you add fetches with alias like this {"from cats c 'join c.ownersList owner' where owner.nome like "%uiz%""};
-     * @since 1.3.1
-     * @author Edilson Alexandre Cuamba
-     */
-
-    public static void addFetchWithAlia(IMutableSearch search, String property) {
-        if (property == null || "".equals(property))
-            return; // null properties do nothing, don't bother to add them.
-
-        List<String> fetches = search.getFetchesWithAlias();
-
-        if (fetches == null) {
-            fetches = new ArrayList<String>();
-            search.setFetchesWithAlias(fetches);
-        }
-        if (fetches.contains(property))
-            return;
-        fetches.add(property);
-    }
-
-    public static void addFetchesWithAlias(IMutableSearch search, String... properties) {
-        if (properties != null) {
-            for (String property : properties) {
-                addFetchWithAlia(search, property);
-            }
-        }
-    }
-
-    public static void mergeFetchesWithAlias(IMutableSearch search, List<String> fetchesWithAlias) {
-        List<String> list = search.getFetchesWithAlias();
-        if (list == null) {
-            list = new ArrayList<String>();
-            search.setFetchesWithAlias(list);
-        }
-
-        for (String fetch : fetchesWithAlias) {
-            if (!list.contains(fetch)) {
-                list.add(fetch);
-            }
-        }
-    }
-
-    public static void mergeFetchesWithAlias(IMutableSearch search, String... fetchesWithAlias) {
-        mergeFetchesWithAlias(search, Arrays.asList(fetchesWithAlias));
-    }
-
 }

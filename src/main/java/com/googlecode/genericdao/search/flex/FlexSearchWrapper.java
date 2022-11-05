@@ -14,12 +14,12 @@
  */
 package com.googlecode.genericdao.search.flex;
 
-import java.util.List;
-
 import com.googlecode.genericdao.search.Field;
 import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.ISearch;
 import com.googlecode.genericdao.search.Sort;
+
+import java.util.List;
 
 /**
  * This provides a wrapper around a FlexSearch so that is can be passed into DAO
@@ -96,8 +96,4 @@ public class FlexSearchWrapper implements ISearch {
     public Class<?> getResultMapClass() {
         return search.resultMapClass;
     }
-
-	public List<String> getFetchesWithAlias() {
-		return search.fetchesWithAlias;
-	}
 }

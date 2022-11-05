@@ -54,12 +54,5 @@ public interface IMutableSearch extends ISearch {
      */
     public IMutableSearch setJoins(List<String> joins);
 
-    /**
-     * @param fetchesWithAlias
-     * @return IMutableSearch
-     * @since 1.3.0
-     */
-    public IMutableSearch setFetchesWithAlias(List<String> fetchesWithAlias);
-
 
 }
